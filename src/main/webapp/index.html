@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>authentication</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-md-6 col-md-offset-3 text-center">
+                <h2 class="bg-info">EJERCICIO AUTHENTICATION</h2>
+                <h4>Iniciar sesión</h4>
+                <!--<button type="button" name="enviar" value="Enviar" id="llenar" class="btn btn-success" >Enviar</button>-->
+                <form id="form">
+                    <div id="divUser" class="form-group">
+                        <label for="user">Usuario</label>
+                        <input id="user" type="text" class="form-control" name="user"><!-- required -->
+                        <div id="errorUser"></div>
+                    </div>	
+                    <div id="divPass" class="form-group">
+                        <label for="pass">Password</label>
+                        <input id="pass" type="text" class="form-control" name="pass"><!-- required -->
+                        <div id="errorPass"></div>
+                    </div>
+
+
+
+                    <input id="login" type="button" class="btn btn-primary" value="Login" name="login">
+                    <input id="logout" type="button" class="btn btn-primary" value="Logout" name="logout">
+                    <input id="check" type="button" class="btn btn-primary" value="Check" name="check">
+                    <input id="getsecret" type="button" class="btn btn-primary" value="Get Secret" name="getsecret">
+
+                </form>
+                <hr>
+
+                <div id="correct" class="alert alert-success"></div>
+                <div id="error" class="alert alert-danger"></div>
+                <div id="errorServidor"></div>
+
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+            
+            $("#correct").hide();
+            $("#error").hide(); 
+               
+            $("#login").click(function () {
+                ajax("login");
+             
+            });
+            $("#logout").click(function () {
+                ajax("logout");
+           
+            });
+              $("#check").click(function () {
+                ajax("check");
+              
+            });
+            $("#getsecret").click(function () {
+                ajax("getsecret");
+             
+   
+            });
+              
+         
+        function ajax(str) {
+        if (str === "login") {
+                    var usuario = $("#user").val();
+                    var password = $("#pass").val();
+                    var op = "login";
+                    var url = "/authentication/json?op=" + op + "&user=" + usuario + "&pass=" + password;
+                };
+       if (str === "logout") {
+                    var op = "logout";
+                    var url = "/authentication/json?op=" + op;
+                };
+       if (str === "check") {
+                    var op = "check";
+                    var url = "/authentication/json?op=" + op;
+                };
+                
+       if (str === "getsecret") {
+                    var op = "getsecret";
+                    var url = "/authentication/json?op=" + op;
+                };
+        
+        
+        
+                $.ajax({
+                    dataType: "json",
+                    url: url,
+                    cache: false,
+                    menthod: "GET",
+                    success: function (data) {
+               
+                        var json_string = data;
+                        var ob = JSON.parse(json_string);
+                        var msg= ob.msg;
+                        var status= ob.status;
+                        
+                        if (status ===200){
+                        $("#error").hide(); 
+                        $("#correct").show();
+                        $("#correct").empty().append(msg);   
+                        } else {
+                        $("#correct").hide(); 
+                        $("#error").show(); 
+                        $("#error").empty().append(msg);          
+                        }
+                        
+                        
+                        
+                        
+                        
+                    },
+                    error: function (data) {
+                       $("#alerta").show(); 
+                        $("#alerta").empty().append(data);
+                    }
+                });
+
+
+        }
+
+
+            });
+
+        </script>
+    </body>
+</html>
