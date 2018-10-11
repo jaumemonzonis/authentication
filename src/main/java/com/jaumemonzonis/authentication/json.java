@@ -8,12 +8,18 @@ package com.jaumemonzonis.authentication;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
-import static java.lang.System.out;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import static java.lang.System.out;
+import java.lang.invoke.MethodHandles;
+import java.sql.Connection;
 
 /**
  *
@@ -34,17 +40,54 @@ public class json extends HttpServlet {
             throws ServletException, IOException {
 
         response.setContentType("application/json; charset=UTF-8");
+
         HttpSession oSession = request.getSession();
-        String strJson = "";
         String strOp = request.getParameter("op");
-        Gson gSon = new Gson();
+        String strUser = request.getParameter("user");
+        String strPass = request.getParameter("pass");
+        String strJson = "";
+
         try {
             if (strOp != null) {
-                
+
+                if (strOp.equalsIgnoreCase("connect")) {
+
+                    ComboPooledDataSource cpds = new ComboPooledDataSource();
+                    cpds = new ComboPooledDataSource();
+                    Connection connection = null;
+
+                    try {
+                        cpds.setDriverClass("com.mysql.jdbc.Driver"); //loads the jdbc driver
+                    } catch (Exception ex) {
+                        response.setStatus(500);
+                        strJson = "{\"status\":500,\"msg\":\"jdbc driver not found\"}";
+                        out.print(strJson);
+                    }
+
+                    cpds.setJdbcUrl("jdbc:mysql://localhost/trolleyes");
+                    cpds.setUser("root2");
+                    cpds.setPassword("bitnami");
+
+                    // the settings below are optional -- c3p0 can work with defaults
+                    cpds.setMinPoolSize(5);
+                    cpds.setAcquireIncrement(5);
+                    cpds.setMaxPoolSize(20);
+                    cpds.setMaxStatements(180);
+
+                    try {
+                        ComboPooledDataSource dataSource = cpds;
+                        connection = dataSource.getConnection();
+                        strJson = "{\"status\":200,\"msg\":\"c3p0 Connection OK\"}";
+                        out.print(strJson);
+
+                    } catch (Exception ex) {
+                        strJson = "{\"status\":500,\"msg\":\"Bad c3p0 Connection\"}";
+                        out.print(strJson);
+                    }
+                }
                 
                 if (strOp.equalsIgnoreCase("login")) {
-                    String strUser = request.getParameter("user");
-                    String strPass = request.getParameter("pass");
+
                     if (strUser.equalsIgnoreCase("jaume") && strPass.equalsIgnoreCase("jam")) {
                         oSession.setAttribute("sessionvar", strUser);
                         strJson = "{\"status\":200,\"msg\":\"" + strUser + "\"}";
@@ -75,13 +118,15 @@ public class json extends HttpServlet {
                     }
                 }
 
+                
+
             } else {
                 strJson = "{\"status\":200,\"msg\":\"OK\"}";
             }
-
-//        response.getWriter().append(strJson).close();
-            response.getWriter().append(gSon.toJson(strJson));
-
+            
+            response.getWriter().append(strJson).close();
+                //response.getWriter().append(gSon.toJson(strJson));
+            
         } finally {
             out.close();
         }
