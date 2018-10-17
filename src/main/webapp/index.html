@@ -49,87 +49,147 @@ and open the template in the editor.
         </div>
         <script>
             $(document).ready(function () {
-            
-            $("#correct").hide();
-            $("#error").hide(); 
-               
-            $("#login").click(function () {
-                ajax("login");
-             
-            });
-            $("#logout").click(function () {
-                ajax("logout");
-           
-            });
-              $("#check").click(function () {
-                ajax("check");
-              
-            });
-            $("#getsecret").click(function () {
-                ajax("getsecret");
-             
-   
-            });
-              
-         
-        function ajax(str) {
-        if (str === "login") {
-                    var usuario = $("#user").val();
-                    var password = $("#pass").val();
-                    var op = "login";
-                    var url = "/authentication/json?op=" + op + "&user=" + usuario + "&pass=" + password;
-                };
-       if (str === "logout") {
-                    var op = "logout";
-                    var url = "/authentication/json?op=" + op;
-                };
-       if (str === "check") {
-                    var op = "check";
-                    var url = "/authentication/json?op=" + op;
-                };
-                
-       if (str === "getsecret") {
-                    var op = "getsecret";
-                    var url = "/authentication/json?op=" + op;
-                };
-        
-        
-        
+                $("#divUser").show();
+                $("#divPass").show();
+                $("#login").show();
+                $("#logout").hide();
+                $("#check").hide();
+                $("#getsecret").hide();
+
                 $.ajax({
                     dataType: "json",
-                    url: url,
+                    url: "/authentication/json?op=check",
                     cache: false,
                     menthod: "GET",
                     success: function (data) {
-               
                         var json_string = data;
                         var ob = JSON.parse(json_string);
-                        var msg= ob.msg;
-                        var status= ob.status;
-                        
-                        if (status ===200){
-                        $("#error").hide(); 
-                        $("#correct").show();
-                        $("#correct").empty().append(msg);   
+                        var status = ob.status;
+                        var msg = ob.msg;
+
+                        if (status === 401) {
+                            $("#divUser").show();
+                            $("#divPass").show();
+                            $("#login").show();
+                            $("#logout").hide();
+                            $("#check").hide();
+                            $("#getsecret").hide();
+
                         } else {
-                        $("#correct").hide(); 
-                        $("#error").show(); 
-                        $("#error").empty().append(msg);          
+                            $("#divUser").hide();
+                            $("#divPass").hide();
+                            $("#login").hide();
+                            $("#logout").show();
+                            $("#check").hide();
+                            $("#getsecret").show();
+                            $("#correct").show();
+                            $("#correct").empty().append("Sesión iniciada de " + msg);
                         }
-                        
-                        
-                        
-                        
-                        
+
                     },
                     error: function (data) {
-                       $("#alerta").show(); 
-                        $("#alerta").empty().append(data);
+
                     }
                 });
 
+                $("#correct").hide();
+                $("#error").hide();
 
-        }
+                $("#login").click(function () {
+                    ajax("login");
+                });
+                $("#logout").click(function () {
+                    ajax("logout");
+                });
+                $("#check").click(function () {
+                    ajax("check");
+                });
+                $("#getsecret").click(function () {
+                    ajax("getsecret");
+                });
+
+
+
+                function ajax(str) {
+                    if (str === "login") {
+                        var usuario = $("#user").val();
+                        var password = $("#pass").val();
+                        var op = "login";
+                        var url = "/authentication/json?op=" + op + "&user=" + usuario + "&pass=" + password;
+                    }
+                    ;
+                    if (str === "logout") {
+                        var op = "logout";
+                        var url = "/authentication/json?op=" + op;
+                    }
+                    ;
+                    if (str === "check") {
+                        var op = "check";
+                        var url = "/authentication/json?op=" + op;
+                    }
+                    ;
+
+                    if (str === "getsecret") {
+                        var op = "getsecret";
+                        var url = "/authentication/json?op=" + op;
+                    }
+                    ;
+
+
+
+                    $.ajax({
+                        dataType: "json",
+                        url: url,
+                        cache: false,
+                        menthod: "GET",
+                        success: function (data) {
+
+                            var json_string = data;
+                            var ob = JSON.parse(json_string);
+                            var msg = ob.msg;
+                            var status = ob.status;
+
+                            if (msg === "jaume") {
+                                $("#divUser").hide();
+                                $("#divPass").hide();
+                                $("#login").hide();
+                                $("#logout").show();
+                                $("#check").show();
+                                $("#getsecret").show();
+                            }
+
+                            if (msg === "Session is closed") {
+                                $("#divUser").show();
+                                $("#divPass").show();
+                                $("#login").show();
+                                $("#logout").hide();
+                                $("#check").hide();
+                                $("#getsecret").hide();
+
+                            }
+                            if (status === 200) {
+                                $("#error").hide();
+                                $("#correct").show();
+                                $("#correct").empty().append(msg);
+                            } else {
+                                $("#correct").hide();
+                                $("#error").show();
+                                $("#error").empty().append(msg);
+                            }
+
+
+
+
+
+                        },
+                        error: function (data) {
+                            $("#alerta").show();
+                            $("#alerta").empty().append(data);
+                        }
+                    });
+
+
+                }
 
 
             });

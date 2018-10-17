@@ -55,7 +55,7 @@ public class json extends HttpServlet {
                 }
                 if (strOp.equalsIgnoreCase("logout")) {
                     oSession.invalidate();
-                    strJson = "{\"status\":200,\"msg\":\"Session is closed.\"}";
+                    strJson = "{\"status\":200,\"msg\":\"Session is closed\"}";
                 }
 
                 if (strOp.equalsIgnoreCase("getsecret")) {
